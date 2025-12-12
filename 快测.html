@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3日能量观察日志 | 高能人生系统</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-blue: #3498db;
+            --light-blue: #e8f4fc;
+            --energy-orange: #ff9800;
+            --light-orange: #fff3e0;
+            --dark-gray: #333;
+            --medium-gray: #666;
+            --light-gray: #f5f7fa;
+            --border-color: #e1e8ed;
+            --positive-green: #2ecc71;
+            --negative-red: #e74c3c;
+            --neutral-gray: #95a5a6;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            --radius: 10px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f9fbfd;
+            color: var(--dark-gray);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+        
+        /* 页眉样式 */
+        header {
+            background: linear-gradient(135deg, var(--primary-blue) 0%, #5dade2 100%);
+            color: white;
+            padding: 40px 0;
+            text-align: center;
+            margin-bottom: 40px;
+            border-radius: 0 0 30px 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .logo {
+            font-size: 2.8rem;
+            margin-bottom: 15px;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 700px;
+            margin: 0 auto 20px;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background-color: var(--energy-orange);
+            color: white;
+            padding: 14px 32px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            margin-top: 20px;
+            transition: var(--transition);
+            box-shadow: 0 4px 15px rgba(255, 152, 0, 0.3);
+        }
+        
+        .cta-button:hover {
+            background-color: #ff8a00;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(255, 152, 0, 0.4);
+        }
+        
+        /* 主要部分样式 */
+        .section {
+            background-color: white;
+            border-radius: var(--radius);
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: var(--shadow);
+        }
+        
+        .section-title {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--light-blue);
+            display: flex;
+            align-items: center;
+        }
+        
+        .section-title i {
+            margin-right: 12px;
+            background-color: var(--light-blue);
+            padding: 10px;
+            border-radius: 50%;
+        }
+        
+        .philosophy-card {
+            background-color: var(--light-blue);
+            padding: 25px;
+            border-radius: var(--radius);
+            border-left: 5px solid var(--primary-blue);
+            margin-bottom: 25px;
+        }
+        
+        .philosophy-card h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+            font-size: 1.4rem;
+        }
+        
+        /* 使用方法样式 */
+        .steps {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            margin-top: 25px;
+        }
+        
+        .step {
+            flex: 1;
+            min-width: 280px;
+            margin: 0 10px 20px;
+            text-align: center;
+            padding: 25px 20px;
+            background-color: var(--light-gray);
+            border-radius: var(--radius);
+            transition: var(--transition);
+        }
+        
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .step-number {
+            display: inline-block;
+            background-color: var(--primary-blue);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            line-height: 40px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        
+        .step h3 {
+            color: var(--primary-blue);
+            margin-bottom: 10px;
+        }
+        
+        .score-guide {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .score-item {
+            flex: 1;
+            min-width: 170px;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin: 0 8px 15px;
+            text-align: center;
+        }
+        
+        .negative {
+            background-color: #ffeaea;
+            border-top: 4px solid var(--negative-red);
+        }
+        
+        .neutral {
+            background-color: #f5f5f5;
+            border-top: 4px solid var(--neutral-gray);
+        }
+        
+        .positive {
+            background-color: #eaffea;
+            border-top: 4px solid var(--positive-green);
+        }
+        
+        .score-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+        
+        /* 表格样式 */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 10px;
+        }
+        
+        th {
+            background-color: var(--primary-blue);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        td {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        tr:hover {
+            background-color: var(--light-gray);
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1rem;
+            background-color: white;
+        }
+        
+        .day-label {
+            background-color: var(--light-blue);
+            padding: 12px 20px;
+            border-radius: var(--radius) var(--radius) 0 0;
+            font-weight: 600;
+            color: var(--primary-blue);
+            margin-top: 30px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .day-label i {
+            margin-right: 10px;
+        }
+        
+        /* 复盘问题样式 */
+        .reflection-box {
+            background-color: var(--light-orange);
+            padding: 30px;
+            border-radius: var(--radius);
+            border-left: 5px solid var(--energy-orange);
+            margin-top: 25px;
+        }
+        
+        .reflection-question {
+            font-size: 1.3rem;
+            color: var(--energy-orange);
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            min-height: 120px;
+            margin-top: 10px;
+            resize: vertical;
+        }
+        
+        /* 下一步样式 */
+        .next-step {
+            background: linear-gradient(to right, var(--light-blue), var(--light-orange));
+            padding: 35px;
+            border-radius: var(--radius);
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .next-step h3 {
+            color: var(--primary-blue);
+            font-size: 1.8rem;
+            margin-bottom: 15px;
+        }
+        
+        /* 页脚样式 */
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color);
+            color: var(--medium-gray);
+            font-size: 0.9rem;
+        }
+        
+        .footer-links {
+            margin-top: 15px;
+        }
+        
+        .footer-links a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .steps, .score-guide {
+                flex-direction: column;
+            }
+            
+            .step, .score-item {
+                margin: 0 0 20px 0;
+            }
+            
+            .section {
+                padding: 20px;
+            }
+        }
+        
+        .print-button {
+            background-color: white;
+            color: var(--primary-blue);
+            border: 2px solid var(--primary-blue);
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-top: 20px;
+            transition: var(--transition);
+        }
+        
+        .print-button:hover {
+            background-color: var(--primary-blue);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h1>3日能量观察日志</h1>
+            <p class="subtitle">告别"我好累"，用数据看清你的能量流向。一个简单的自我观察工具，帮你完成从"模糊感觉"到"清晰看见"的第一步。</p>
+            <a href="#download" class="cta-button">立即开始能量观察</a>
+        </div>
+    </header>
+    
+    <main class="container">
+        <section class="section" id="philosophy">
+            <h2 class="section-title"><i class="fas fa-lightbulb"></i>核心心法</h2>
+            <div class="philosophy-card">
+                <h3>真正的改变，始于"看见"</h3>
+                <p>自驱力不是原因，而是你"看清模式并做对小事"后的自然结果。连续3天，完成这份最简单的观察，让数据告诉你能量去哪了。</p>
+            </div>
+        </section>
+        
+        <section class="section" id="usage">
+            <h2 class="section-title"><i class="fas fa-list-ol"></i>使用方法</h2>
+            <p>每天睡前花3分钟，完成以下三个简单步骤：</p>
+            
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>回想</h3>
+                    <p>回顾今天3-5个让你印象深刻的事件，无需记录每件事，只关注那些在能量上有明显起伏的时刻。</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>记录</h3>
+                    <p>在下方表格中，简要写下"时间"和"事件"。越具体越好，例如"14:00-15:00 开项目会议"。</p>
+                </div>
+                
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>评分</h3>
+                    <p>凭第一感觉，给这件事一个能量分数。完全不需要过度思考，相信你的直觉反应。</p>
+                </div>
+            </div>
+            
+            <h3 style="margin-top: 30px; color: var(--primary-blue);">能量评分指南</h3>
+            <div class="score-guide">
+                <div class="score-item negative">
+                    <div class="score-value">-3 分</div>
+                    <div class="score-label">消耗能量</div>
+                    <p>高度消耗、被动的事，如无效会议、冲突对话</p>
+                </div>
+                
+                <div class="score-item neutral">
+                    <div class="score-value">0 分</div>
+                    <div class="score-label">能量中性</div>
+                    <p>必要日常，无感的事，如通勤、常规工作</p>
+                </div>
+                
+                <div class="score-item positive">
+                    <div class="score-value">+3 分</div>
+                    <div class="score-label">补充能量</div>
+                    <p>略有滋养、主动选择的事，如运动、深度工作</p>
+                </div>
+            </div>
+        </section>
+        
+        <section class="section" id="log">
+            <h2 class="section-title"><i class="fas fa-clipboard-list"></i>3日能量观察表</h2>
+            <p>请连续3天填写此表，每天睡前花3分钟完成。建议固定时间填写以养成习惯。</p>
+            
+            <!-- 第一天 -->
+            <div class="day-label">
+                <i class="far fa-sun"></i> 第一天
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">时间</th>
+                            <th width="50%">核心事件 (你做了什么/经历了什么?)</th>
+                            <th width="25%">能量评分 (-3 / 0 / +3)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder="例: 14:00-15:00"></td>
+                            <td><input type="text" placeholder="例: 开项目同步会，气氛紧张"></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 第二天 -->
+            <div class="day-label">
+                <i class="far fa-moon"></i> 第二天
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">时间</th>
+                            <th width="50%">核心事件 (你做了什么/经历了什么?)</th>
+                            <th width="25%">能量评分 (-3 / 0 / +3)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- 第三天 -->
+            <div class="day-label">
+                <i class="far fa-star"></i> 第三天
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th width="25%">时间</th>
+                            <th width="50%">核心事件 (你做了什么/经历了什么?)</th>
+                            <th width="25%">能量评分 (-3 / 0 / +3)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="text" placeholder=""></td>
+                            <td><input type="text" placeholder=""></td>
+                            <td>
+                                <select>
+                                    <option value="">选择分数</option>
+                                    <option value="-3">-3 (消耗能量)</option>
+                                    <option value="-2">-2</option>
+                                    <option value="-1">-1</option>
+                                    <option value="0">0 (能量中性)</option>
+                                    <option value="1">+1</option>
+                                    <option value="2">+2</option>
+                                    <option value="3">+3 (补充能量)</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <button class="print-button" onclick="window.print()">
+                <i class="fas fa-print"></i> 打印此观察日志
+            </button>
+        </section>
+        
+        <section class="section" id="reflection">
+            <h2 class="section-title"><i class="fas fa-question-circle"></i>3日后复盘问题</h2>
+            <div class="reflection-box">
+                <div class="reflection-question">
+                    在3天中，反复出现且让你打分偏负（-1, -2, -3）的事件是什么？
+                </div>
+                <p>例如："临时的会议"、"刷短视频"、"纠结中午吃什么"、 "无效的社交"、"多任务切换"等。</p>
+                <textarea placeholder="请写下你的发现..."></textarea>
+                <p style="margin-top: 15px; font-style: italic; color: var(--medium-gray);">提示：注意那些重复出现的模式，而不是单一事件。</p>
+            </div>
+        </section>
+        
+        <section class="section" id="next">
+            <h2 class="section-title"><i class="fas fa-flag-checkered"></i>下一步行动</h2>
+            <div class="next-step">
+                <h3>恭喜！你已经完成了最宝贵的"自我觉察"</h3>
+                <p>如果你发现了一些消耗能量的模式，并<strong>想知道如何系统性地解决它、将它转化为每天可持续的掌控感</strong>，这正是我们下一步要深入工作的核心。</p>
+                <p style="margin-top: 15px;">在《高能重启实战营》中，我们将带你：</p>
+                <ul style="text-align: left; max-width: 600px; margin: 20px auto;">
+                    <li>深度分析你的能量模式背后的原因</li>
+                    <li>建立不可动摇的每日"定海神针"</li>
+                    <li>设计个性化的能量管理系统</li>
+                    <li>获得持续的行动支持和反馈</li>
+                </ul>
+                <a href="#contact" class="cta-button" style="margin-top: 20px;">了解完整解决方案</a>
+            </div>
+        </section>
+    </main>
+    
+    <footer class="container">
+        <p>© 2023 高能人生系统 | 3日能量观察日志工具</p>
+        <p>此工具设计用于个人能量觉察的第一步，是《高能人生操作系统》的入门体验。</p>
+        <div class="footer-links">
+            <a href="#">隐私政策</a> | 
+            <a href="#">使用条款</a> | 
+            <a href="#">联系我们</a>
+        </div>
+    </footer>
+    
+    <script>
+        // 简单交互效果：保存填写内容到本地存储
+        document.addEventListener('DOMContentLoaded', function() {
+            const inputs = document.querySelectorAll('input, select, textarea');
+            
+            // 尝试从本地存储加载已填写的内容
+            inputs.forEach(input => {
+                const inputId = input.id || input.name || input.placeholder;
+                if (inputId) {
+                    const savedValue = localStorage.getItem(`energyLog_${inputId}`);
+                    if (savedValue) {
+                        input.value = savedValue;
+                    }
+                }
+                
+                // 保存输入内容到本地存储
+                input.addEventListener('input', function() {
+                    const inputId = this.id || this.name || this.placeholder;
+                    if (inputId) {
+                        localStorage.setItem(`energyLog_${inputId}`, this.value);
+                    }
+                });
+            });
+            
+            // 打印按钮功能增强
+            document.querySelector('.print-button').addEventListener('click', function() {
+                // 在打印前可以添加一些提示
+                alert('建议使用浏览器的"另存为PDF"功能，以便保存填写的内容。确保在打印设置中勾选"背景图形"选项。');
+            });
+            
+            // 平滑滚动到锚点
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 20,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
