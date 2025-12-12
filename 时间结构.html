@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>能量驱动任务管理器</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
+        }
+        
+        h1 {
+            color: #4a6fa5;
+            margin-bottom: 10px;
+            font-size: 2.2rem;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 1.1rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .panel {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .panel:hover {
+            transform: translateY(-5px);
+        }
+        
+        .panel-title {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.4rem;
+        }
+        
+        .panel-title i {
+            margin-right: 10px;
+            font-size: 1.6rem;
+        }
+        
+        .energy-high .panel-title {
+            color: #2e7d32;
+        }
+        
+        .energy-medium .panel-title {
+            color: #ed6c02;
+        }
+        
+        .energy-low .panel-title {
+            color: #d32f2f;
+        }
+        
+        .task-input {
+            display: flex;
+            margin-bottom: 15px;
+        }
+        
+        .task-input input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .task-input button {
+            background-color: #4a6fa5;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0 20px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        
+        .task-input button:hover {
+            background-color: #3a5a8a;
+        }
+        
+        .task-list {
+            list-style-type: none;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #ddd;
+            transition: all 0.2s;
+        }
+        
+        .energy-high .task-item {
+            border-left-color: #2e7d32;
+        }
+        
+        .energy-medium .task-item {
+            border-left-color: #ed6c02;
+        }
+        
+        .energy-low .task-item {
+            border-left-color: #d32f2f;
+        }
+        
+        .task-item:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .task-checkbox {
+            margin-right: 12px;
+            transform: scale(1.2);
+        }
+        
+        .task-text {
+            flex-grow: 1;
+        }
+        
+        .task-completed {
+            text-decoration: line-through;
+            color: #888;
+            background-color: #f0f0f0;
+        }
+        
+        .energy-check {
+            text-align: center;
+            padding: 25px;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+        
+        .energy-check h2 {
+            margin-bottom: 20px;
+            color: #4a6fa5;
+        }
+        
+        .energy-slider-container {
+            margin: 30px 0;
+        }
+        
+        .energy-slider {
+            width: 100%;
+            height: 20px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: linear-gradient(to right, #d32f2f, #ed6c02, #2e7d32);
+            border-radius: 10px;
+            outline: none;
+        }
+        
+        .energy-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #4a6fa5;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+        
+        .energy-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #333;
+        }
+        
+        .energy-level {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        
+        .level-low {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+        
+        .level-medium {
+            background-color: #fff3e0;
+            color: #ed6c02;
+        }
+        
+        .level-high {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+        }
+        
+        .recommendation {
+            font-size: 1.2rem;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            border-left: 4px solid #4a6fa5;
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary {
+            background-color: #4a6fa5;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a5a8a;
+        }
+        
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+        }
+        
+        .current-task {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-bottom: 30px;
+            border-top: 5px solid #4a6fa5;
+        }
+        
+        .current-task h2 {
+            color: #4a6fa5;
+            margin-bottom: 15px;
+        }
+        
+        .current-task-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .current-task-text {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+        
+        .current-task-energy {
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        
+        .instructions {
+            background-color: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+        }
+        
+        .instructions h3 {
+            color: #4a6fa5;
+            margin-bottom: 15px;
+        }
+        
+        .instructions ol {
+            padding-left: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 30px;
+            color: #888;
+            font-style: italic;
+        }
+        
+        .delete-task {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 1.2rem;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1><i class="fas fa-brain"></i> 能量驱动任务管理器</h1>
+        <p class="subtitle">根据你的能量状态动态选择任务，告别僵化的日程表。接纳状态波动，聚焦有效行动。</p>
+    </header>
+    
+    <section class="energy-check">
+        <h2><i class="fas fa-battery-full"></i> 早晨能量自检</h2>
+        <p>醒来后，评估你现在的能量状态（1-10分）</p>
+        
+        <div class="energy-slider-container">
+            <input type="range" min="1" max="10" value="5" class="energy-slider" id="energySlider">
+            <div class="energy-value" id="energyValue">5</div>
+            <div class="energy-level" id="energyLevel">中等能量</div>
+        </div>
+        
+        <div class="recommendation" id="recommendation">
+            根据你的能量水平，建议从<b>中能量档</b>任务开始
+        </div>
+        
+        <div class="action-buttons">
+            <button class="btn btn-primary" id="startBtn">
+                <i class="fas fa-play"></i> 根据能量状态开始工作
+            </button>
+            <button class="btn btn-secondary" id="reassessBtn">
+                <i class="fas fa-redo"></i> 重新评估能量
+            </button>
+        </div>
+    </section>
+    
+    <section class="current-task" id="currentTaskPanel" style="display: none;">
+        <h2><i class="fas fa-tasks"></i> 当前任务</h2>
+        <div class="current-task-content">
+            <div>
+                <div class="current-task-text" id="currentTaskText">暂无选中任务</div>
+                <div class="current-task-energy" id="currentTaskEnergy"></div>
+            </div>
+            <div>
+                <button class="btn btn-primary" id="completeTaskBtn">
+                    <i class="fas fa-check"></i> 标记完成
+                </button>
+                <button class="btn btn-secondary" id="changeTaskBtn">
+                    <i class="fas fa-random"></i> 切换任务
+                </button>
+            </div>
+        </div>
+        <p><i class="fas fa-lightbulb"></i> 提示：如果对当前任务感到抗拒，可以切换到同档位或更低档位的另一个任务。</p>
+    </section>
+    
+    <div class="container">
+        <div class="panel energy-high">
+            <div class="panel-title">
+                <i class="fas fa-rocket"></i> 高能量档 (7-10分)
+            </div>
+            <p style="margin-bottom: 15px; color: #666;">深度思考、创造性工作、重要决策</p>
+            
+            <div class="task-input">
+                <input type="text" id="highTaskInput" placeholder="添加高能量任务，如：完成课程大纲设计">
+                <button id="addHighTaskBtn">添加</button>
+            </div>
+            
+            <ul class="task-list" id="highTaskList">
+                <!-- 高能量任务会动态添加到这里 -->
+                <li class="empty-state">暂无任务，请添加高能量任务</li>
+            </ul>
+        </div>
+        
+        <div class="panel energy-medium">
+            <div class="panel-title">
+                <i class="fas fa-walking"></i> 中能量档 (4-6分)
+            </div>
+            <p style="margin-bottom: 15px; color: #666;">执行性、重复性、整理类工作</p>
+            
+            <div class="task-input">
+                <input type="text" id="mediumTaskInput" placeholder="添加中能量任务，如：剪辑视频片段">
+                <button id="addMediumTaskBtn">添加</button>
+            </div>
+            
+            <ul class="task-list" id="mediumTaskList">
+                <!-- 中能量任务会动态添加到这里 -->
+                <li class="empty-state">暂无任务，请添加中能量任务</li>
+            </ul>
+        </div>
+        
+        <div class="panel energy-low">
+            <div class="panel-title">
+                <i class="fas fa-couch"></i> 低能量档 (1-3分)
+            </div>
+            <p style="margin-bottom: 15px; color: #666;">维护性、机械性、自我关怀任务</p>
+            
+            <div class="task-input">
+                <input type="text" id="lowTaskInput" placeholder="添加低能量任务，如：整理电脑桌面">
+                <button id="addLowTaskBtn">添加</button>
+            </div>
+            
+            <ul class="task-list" id="lowTaskList">
+                <!-- 低能量任务会动态添加到这里 -->
+                <li class="empty-state">暂无任务，请添加低能量任务</li>
+            </ul>
+        </div>
+    </div>
+    
+    <section class="instructions">
+        <h3><i class="fas fa-info-circle"></i> 使用指南</h3>
+        <ol>
+            <li><b>晚间规划</b>：在睡前，为三个能量档位添加2-3个任务</li>
+            <li><b>早晨自检</b>：醒来后，滑动滑块评估当前能量状态</li>
+            <li><b>开始工作</b>：根据能量分数，从推荐档位选择一个任务开始</li>
+            <li><b>动态调整</b>：每完成一个任务后，重新评估能量状态，选择下一个任务</li>
+            <li><b>接纳波动</b>：如果状态极差（3分以下），允许自己从低能量档或休息开始</li>
+        </ol>
+        <p><i class="fas fa-heart"></i> 记住：计划的成功不在于完成度，而在于是否减少了决策瘫痪，是否在状态好时抓住了深度工作机会。</p>
+    </section>
+    
+    <footer>
+        <p>能量驱动任务管理器 | 设计理念：尊重状态波动，动态匹配任务</p>
+        <p>数据保存在本地浏览器中，清理缓存会导致数据丢失</p>
+    </footer>
+
+    <script>
+        // 初始化数据
+        let tasks = {
+            high: [],
+            medium: [],
+            low: []
+        };
+        
+        let currentEnergyLevel = 5;
+        let currentTask = null;
+        
+        // 从本地存储加载数据
+        function loadData() {
+            const savedTasks = localStorage.getItem('energyTasks');
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
+            
+            const savedCurrentTask = localStorage.getItem('currentTask');
+            if (savedCurrentTask) {
+                currentTask = JSON.parse(savedCurrentTask);
+            }
+            
+            const savedEnergy = localStorage.getItem('currentEnergy');
+            if (savedEnergy) {
+                currentEnergyLevel = parseInt(savedEnergy);
+                document.getElementById('energySlider').value = currentEnergyLevel;
+                document.getElementById('energyValue').textContent = currentEnergyLevel;
+                updateEnergyLevel(currentEnergyLevel);
+            }
+            
+            renderAllTasks();
+            updateCurrentTaskDisplay();
+        }
+        
+        // 保存数据到本地存储
+        function saveData() {
+            localStorage.setItem('energyTasks', JSON.stringify(tasks));
+            if (currentTask) {
+                localStorage.setItem('currentTask', JSON.stringify(currentTask));
+            }
+            localStorage.setItem('currentEnergy', currentEnergyLevel);
+        }
+        
+        // 渲染所有任务列表
+        function renderAllTasks() {
+            renderTaskList('high', tasks.high);
+            renderTaskList('medium', tasks.medium);
+            renderTaskList('low', tasks.low);
+        }
+        
+        // 渲染单个任务列表
+        function renderTaskList(level, taskArray) {
+            const taskListElement = document.getElementById(`${level}TaskList`);
+            
+            if (taskArray.length === 0) {
+                taskListElement.innerHTML = '<li class="empty-state">暂无任务，请添加' + getEnergyLabel(level) + '任务</li>';
+                return;
+            }
+            
+            taskListElement.innerHTML = '';
+            
+            taskArray.forEach((task, index) => {
+                const li = document.createElement('li');
+                li.className = `task-item ${task.completed ? 'task-completed' : ''}`;
+                
+                li.innerHTML = `
+                    <input type="checkbox" class="task-checkbox" ${task.completed ? 'checked' : ''} data-level="${level}" data-index="${index}">
+                    <span class="task-text">${task.text}</span>
+                    <button class="delete-task" data-level="${level}" data-index="${index}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                `;
+                
+                taskListElement.appendChild(li);
+            });
+            
+            // 添加事件监听器
+            document.querySelectorAll(`#${level}TaskList .task-checkbox`).forEach(checkbox => {
+                checkbox.addEventListener('change', function() {
+                    const level = this.getAttribute('data-level');
+                    const index = parseInt(this.getAttribute('data-index'));
+                    tasks[level][index].completed = this.checked;
+                    
+                    // 如果这是当前任务且被标记为完成
+                    if (currentTask && currentTask.level === level && currentTask.index === index && this.checked) {
+                        completeCurrentTask();
+                    }
+                    
+                    saveData();
+                    renderAllTasks();
+                });
+            });
+            
+            document.querySelectorAll(`#${level}TaskList .delete-task`).forEach(button => {
+                button.addEventListener('click', function() {
+                    const level = this.getAttribute('data-level');
+                    const index = parseInt(this.getAttribute('data-index'));
+                    
+                    // 如果删除的是当前任务，清空当前任务
+                    if (currentTask && currentTask.level === level && currentTask.index === index) {
+                        currentTask = null;
+                        updateCurrentTaskDisplay();
+                    }
+                    
+                    tasks[level].splice(index, 1);
+                    saveData();
+                    renderAllTasks();
+                });
+            });
+        }
+        
+        // 获取能量档位标签
+        function getEnergyLabel(level) {
+            switch(level) {
+                case 'high': return '高能量';
+                case 'medium': return '中能量';
+                case 'low': return '低能量';
+                default: return '';
+            }
+        }
+        
+        // 更新能量等级显示
+        function updateEnergyLevel(value) {
+            const energyValueElement = document.getElementById('energyValue');
+            const energyLevelElement = document.getElementById('energyLevel');
+            const recommendationElement = document.getElementById('recommendation');
+            
+            energyValueElement.textContent = value;
+            currentEnergyLevel = value;
+            
+            let levelText = '';
+            let levelClass = '';
+            let recommendation = '';
+            
+            if (value >= 7) {
+                levelText = '高能量';
+                levelClass = 'level-high';
+                recommendation = '根据你的能量水平，建议从<b>高能量档</b>任务开始，进行深度创造性工作。';
+            } else if (value >= 4) {
+                levelText = '中等能量';
+                levelClass = 'level-medium';
+                recommendation = '根据你的能量水平，建议从<b>中能量档</b>任务开始，进行执行性工作。';
+            } else {
+                levelText = '低能量';
+                levelClass = 'level-low';
+                recommendation = '根据你的能量水平，建议从<b>低能量档</b>任务开始，或先进行自我关怀和休息。';
+            }
+            
+            energyLevelElement.textContent = levelText;
+            energyLevelElement.className = `energy-level ${levelClass}`;
+            recommendationElement.innerHTML = recommendation;
+            
+            saveData();
+        }
+        
+        // 根据能量状态推荐任务
+        function recommendTask() {
+            let recommendedLevel;
+            
+            if (currentEnergyLevel >= 7) {
+                recommendedLevel = 'high';
+            } else if (currentEnergyLevel >= 4) {
+                recommendedLevel = 'medium';
+            } else {
+                recommendedLevel = 'low';
+            }
+            
+            // 获取未完成的推荐档位任务
+            const recommendedTasks = tasks[recommendedLevel].filter(task => !task.completed);
+            
+            if (recommendedTasks.length > 0) {
+                // 随机选择一个未完成的任务
+                const randomIndex = Math.floor(Math.random() * recommendedTasks.length);
+                
+                // 找到该任务在原始数组中的索引
+                let actualIndex = -1;
+                for (let i = 0; i < tasks[recommendedLevel].length; i++) {
+                    if (tasks[recommendedLevel][i].text === recommendedTasks[randomIndex].text && 
+                        !tasks[recommendedLevel][i].completed) {
+                        actualIndex = i;
+                        break;
+                    }
+                }
+                
+                if (actualIndex !== -1) {
+                    return {
+                        level: recommendedLevel,
+                        index: actualIndex,
+                        text: tasks[recommendedLevel][actualIndex].text
+                    };
+                }
+            }
+            
+            // 如果没有推荐档位的任务，尝试其他档位
+            const allLevels = ['high', 'medium', 'low'];
+            for (const level of allLevels) {
+                const availableTasks = tasks[level].filter(task => !task.completed);
+                if (availableTasks.length > 0) {
+                    // 找到该任务在原始数组中的索引
+                    for (let i = 0; i < tasks[level].length; i++) {
+                        if (tasks[level][i].text === availableTasks[0].text && 
+                            !tasks[level][i].completed) {
+                            return {
+                                level: level,
+                                index: i,
+                                text: tasks[level][i].text
+                            };
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+        
+        // 开始根据能量状态工作
+        function startWork() {
+            const recommendedTask = recommendTask();
+            
+            if (!recommendedTask) {
+                alert('请先添加一些任务到不同能量档位！');
+                return;
+            }
+            
+            currentTask = recommendedTask;
+            updateCurrentTaskDisplay();
+            
+            // 显示当前任务面板
+            document.getElementById('currentTaskPanel').style.display = 'block';
+            
+            saveData();
+        }
+        
+        // 更新当前任务显示
+        function updateCurrentTaskDisplay() {
+            const currentTaskTextElement = document.getElementById('currentTaskText');
+            const currentTaskEnergyElement = document.getElementById('currentTaskEnergy');
+            
+            if (!currentTask) {
+                currentTaskTextElement.textContent = '暂无选中任务';
+                currentTaskEnergyElement.textContent = '';
+                document.getElementById('currentTaskPanel').style.display = 'none';
+                return;
+            }
+            
+            currentTaskTextElement.textContent = currentTask.text;
+            
+            let energyLabel = '';
+            let energyClass = '';
+            
+            switch(currentTask.level) {
+                case 'high':
+                    energyLabel = '高能量任务';
+                    energyClass = 'level-high';
+                    break;
+                case 'medium':
+                    energyLabel = '中能量任务';
+                    energyClass = 'level-medium';
+                    break;
+                case 'low':
+                    energyLabel = '低能量任务';
+                    energyClass = 'level-low';
+                    break;
+            }
+            
+            currentTaskEnergyElement.textContent = energyLabel;
+            currentTaskEnergyElement.className = `current-task-energy ${energyClass}`;
+            
+            // 显示当前任务面板
+            document.getElementById('currentTaskPanel').style.display = 'block';
+        }
+        
+        // 完成当前任务
+        function completeCurrentTask() {
+            if (!currentTask) return;
+            
+            tasks[currentTask.level][currentTask.index].completed = true;
+            
+            // 显示完成消息
+            alert(`恭喜完成任务: "${currentTask.text}"！\n\n现在是重新评估能量状态的好时机。`);
+            
+            // 清空当前任务
+            currentTask = null;
+            updateCurrentTaskDisplay();
+            
+            // 更新任务列表显示
+            renderAllTasks();
+            saveData();
+        }
+        
+        // 切换任务
+        function changeTask() {
+            if (!currentTask) return;
+            
+            const recommendedTask = recommendTask();
+            
+            if (!recommendedTask) {
+                alert('没有其他可用任务了！');
+                return;
+            }
+            
+            // 确保不切换到同一个任务
+            if (recommendedTask.level === currentTask.level && recommendedTask.index === currentTask.index) {
+                alert('这是当前唯一的推荐任务，请尝试添加更多任务。');
+                return;
+            }
+            
+            currentTask = recommendedTask;
+            updateCurrentTaskDisplay();
+            
+            alert(`已切换到新任务: "${currentTask.text}"\n\n如果仍感到抗拒，可以继续切换或重新评估能量状态。`);
+            saveData();
+        }
+        
+        // 添加任务
+        function addTask(level, taskText) {
+            if (!taskText.trim()) {
+                alert('请输入任务内容！');
+                return;
+            }
+            
+            tasks[level].push({
+                text: taskText,
+                completed: false
+            });
+            
+            saveData();
+            renderTaskList(level, tasks[level]);
+        }
+        
+        // 初始化事件监听器
+        function initEventListeners() {
+            // 能量滑块
+            document.getElementById('energySlider').addEventListener('input', function() {
+                updateEnergyLevel(parseInt(this.value));
+            });
+            
+            // 开始工作按钮
+            document.getElementById('startBtn').addEventListener('click', startWork);
+            
+            // 重新评估能量按钮
+            document.getElementById('reassessBtn').addEventListener('click', function() {
+                alert('停下来重新评估能量状态是明智的。调整上面的滑块，然后重新开始选择任务。');
+            });
+            
+            // 完成任务按钮
+            document.getElementById('completeTaskBtn').addEventListener('click', completeCurrentTask);
+            
+            // 切换任务按钮
+            document.getElementById('changeTaskBtn').addEventListener('click', changeTask);
+            
+            // 添加任务按钮
+            document.getElementById('addHighTaskBtn').addEventListener('click', function() {
+                const input = document.getElementById('highTaskInput');
+                addTask('high', input.value);
+                input.value = '';
+            });
+            
+            document.getElementById('addMediumTaskBtn').addEventListener('click', function() {
+                const input = document.getElementById('mediumTaskInput');
+                addTask('medium', input.value);
+                input.value = '';
+            });
+            
+            document.getElementById('addLowTaskBtn').addEventListener('click', function() {
+                const input = document.getElementById('lowTaskInput');
+                addTask('low', input.value);
+                input.value = '';
+            });
+            
+            // 允许按Enter键添加任务
+            document.getElementById('highTaskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask('high', this.value);
+                    this.value = '';
+                }
+            });
+            
+            document.getElementById('mediumTaskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask('medium', this.value);
+                    this.value = '';
+                }
+            });
+            
+            document.getElementById('lowTaskInput').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    addTask('low', this.value);
+                    this.value = '';
+                }
+            });
+        }
+        
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 添加一些示例任务
+            if (!localStorage.getItem('energyTasks')) {
+                tasks.high = [
+                    { text: '完成课程大纲设计', completed: false },
+                    { text: '撰写核心产品文案', completed: false }
+                ];
+                
+                tasks.medium = [
+                    { text: '剪辑昨天拍摄的视频片段', completed: false },
+                    { text: '整理项目素材库', completed: false }
+                ];
+                
+                tasks.low = [
+                    { text: '整理电脑桌面和文件夹', completed: false },
+                    { text: '浏览行业资讯15分钟', completed: false }
+                ];
+                
+                saveData();
+            }
+            
+            loadData();
+            initEventListeners();
+        });
+    </script>
+</body>
+</html>
